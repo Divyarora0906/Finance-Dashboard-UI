@@ -55,7 +55,6 @@ const Sidebar = ({ isOpen, onClose }) => {
         ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
       `}
       >
-        {/* Brand Logo Section */}
         <div className="p-8 mb-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-[#4d8eff] dark:bg-[#adc6ff] rounded-xl flex items-center justify-center shadow-lg dark:shadow-[0_0_20px_rgba(173,198,255,0.3)]">
@@ -165,7 +164,7 @@ const Sidebar = ({ isOpen, onClose }) => {
             </div>
             <div className="flex flex-col min-w-0">
               <span className="text-sm font-bold text-slate-900 dark:text-white truncate leading-tight">
-                {role === "admin" ? "Alex Zorvyn" : "Guest Viewer"}
+                {role === "admin" ? "Admin" : "Guest Viewer"}
               </span>
               <span className="text-[10px] uppercase font-black text-[#4d8eff] dark:text-[#adc6ff] opacity-70">
                 {role} Account

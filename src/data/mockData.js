@@ -61,3 +61,32 @@ export const getRecentTransactions = (data, count = 5) => {
     .sort((a, b) => new Date(b.date) - new Date(a.date))
     .slice(0, count);
 };
+
+export const getDashboardStats = () => {
+  const savedData = localStorage.getItem("zorvyn_transactions");
+  const transactions = savedData ? JSON.parse(savedData) : [];
+
+  const totals = transactions.reduce(
+    (acc, tx) => {
+      const amount = Number(tx.amount) || 0;
+
+      if (tx.type === "income") {
+        acc.income += amount;
+      } else if (tx.type === "expense") {
+        acc.expense += amount;
+      }
+      return acc;
+    },
+    { income: 0, expense: 0 }
+  );
+
+  return {
+    totalIncome: totals.income,
+    totalExpenses: totals.expense,
+    totalBalance: totals.income - totals.expense,
+  };
+};
+
+export const getTotalBalance = () => getDashboardStats().totalBalance;
+export const getTotalIncome = () => getDashboardStats().totalIncome;
+export const getTotalExpense = () => getDashboardStats().totalExpenses;

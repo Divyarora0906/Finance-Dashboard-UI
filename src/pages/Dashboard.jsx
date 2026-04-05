@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { useApp } from "../context/AppContext";
 import BalanceTrend from "../components/features/BalanceTrend";
 import SummaryCard from "../components/features/DashboardCard";
@@ -19,10 +19,13 @@ export default function Dashboard() {
   const { transactions, insights, isDark } = useApp();
   const navigate = useNavigate();
 
-  const recentTransactions = [...transactions]
-    .sort((a, b) => new Date(b.date) - new Date(a.date))
-    .slice(0, 5);
+  const recentTransactions = useMemo(() => {
+    return [...transactions]
+      .sort((a, b) => new Date(b.date) - new Date(a.date))
+      .slice(0, 5);
+  }, [transactions]);
 
+  // Mapping insights to your card structure
   const cards = [
     {
       label: "Total Balance",
@@ -45,26 +48,26 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="space-y-6 p-4 md:p-10 mt-8 md:mt-10 transition-colors duration-500">
+    <div className="space-y-6 p-4 md:p-10 mt-16 md:mt-10 transition-colors duration-500 max-w-full overflow-x-hidden">
       
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-3">
         {cards.map((card, i) => (
           <SummaryCard key={i} {...card} />
         ))}
       </div>
 
-      <div className="bg-[#adc6ff]/10 border border-[#adc6ff]/20 p-4 rounded-2xl flex items-center justify-between">
+      <div className="bg-[#adc6ff]/10 border border-[#adc6ff]/20 p-4 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 transition-all duration-300">
          <p className="text-sm text-[#4d8eff] dark:text-[#adc6ff]">
            <span className="font-black uppercase tracking-widest text-[10px] mr-3 opacity-70">Top Insight:</span>
-           Highest spending in <span className="font-bold text-slate-900 dark:text-white underline decoration-[#adc6ff]">{insights.highestSpendingCategory}</span>
+           Highest spending in <span className="font-bold text-slate-900 dark:text-white underline decoration-[#adc6ff]">{insights.highestSpendingCategory || 'N/A'}</span>
          </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white dark:bg-[#0b1326] p-6 rounded-3xl border border-slate-200 dark:border-white/5 shadow-sm">
+        <div className="bg-white dark:bg-[#0b1326] p-4 md:p-6 rounded-3xl border border-slate-200 dark:border-white/5 shadow-sm overflow-hidden">
           <BalanceTrend transactions={transactions} isDark={isDark} />
         </div>
-        <div className="bg-white dark:bg-[#0b1326] p-6 rounded-3xl border border-slate-200 dark:border-white/5 shadow-sm">
+        <div className="bg-white dark:bg-[#0b1326] p-4 md:p-6 rounded-3xl border border-slate-200 dark:border-white/5 shadow-sm overflow-hidden">
           <SpendingPieChart transactions={transactions} isDark={isDark} />
         </div>
       </div>
@@ -73,48 +76,58 @@ export default function Dashboard() {
         <div className="p-6 border-b border-slate-100 dark:border-white/5 flex justify-between items-center">
           <div>
             <h3 className="text-slate-900 dark:text-white font-bold text-lg">Recent Activity</h3>
-            <p className="text-slate-500 dark:text-white/40 text-xs mt-1">Live updates</p>
+            <p className="text-slate-500 dark:text-white/40 text-xs mt-1">Live updates active</p>
           </div>
           <button 
             onClick={() => navigate('/transactions')}
-            className="flex items-center gap-2 text-[#4d8eff] dark:text-[#adc6ff] text-sm font-bold hover:gap-3 transition-all"
+            className="flex items-center gap-2 text-[#4d8eff] dark:text-[#adc6ff] text-sm font-bold hover:gap-3 transition-all group"
           >
-            View All <MoveRight size={16} />
+            <span className="hidden xs:inline">View All</span> 
+            <MoveRight size={16} className="group-hover:translate-x-1 transition-transform" />
           </button>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+        <div className="w-full overflow-x-auto scrollbar-hide">
+          <table className="w-full min-w-[500px] text-left border-collapse">
             <thead>
               <tr className="text-slate-400 dark:text-white/30 text-[10px] uppercase tracking-[0.2em] border-b border-slate-100 dark:border-white/5">
-                <th className="px-8 py-5 font-black">Category</th>
-                <th className="px-8 py-5 font-black">Date</th>
-                <th className="px-8 py-5 font-black text-right">Amount</th>
+                <th className="px-6 md:px-8 py-5 font-black">Category</th>
+                <th className="px-6 md:px-8 py-5 font-black">Date</th>
+                <th className="px-6 md:px-8 py-5 font-black text-right">Amount</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-white/5">
               {recentTransactions.map((tx) => (
                 <tr key={tx.id} className="hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors group">
-                  <td className="px-8 py-4">
-                    <div className="flex items-center gap-4">
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                        tx.type === "income" ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" : "bg-rose-500/10 text-rose-600 dark:text-rose-400"
+                  <td className="px-6 md:px-8 py-4">
+                    <div className="flex items-center gap-3 md:gap-4">
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                        tx.type === "income" 
+                          ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" 
+                          : "bg-rose-500/10 text-rose-600 dark:text-rose-400"
                       }`}>
                         {tx.type === "income" ? <FaArrowUp size={12} /> : <FaArrowDown size={12} />}
                       </div>
-                      <span className="text-slate-700 dark:text-white text-sm font-bold">{tx.category}</span>
+                      <span className="text-slate-700 dark:text-white text-sm font-bold truncate">{tx.category}</span>
                     </div>
                   </td>
-                  <td className="px-8 py-4 text-slate-400 dark:text-white/40 text-xs font-medium">
+                  <td className="px-6 md:px-8 py-4 text-slate-400 dark:text-white/40 text-xs font-medium whitespace-nowrap">
                     {new Date(tx.date).toLocaleDateString("en-IN", { day: "2-digit", month: "short" })}
                   </td>
-                  <td className={`px-8 py-4 text-sm font-black text-right ${
+                  <td className={`px-6 md:px-8 py-4 text-sm font-black text-right whitespace-nowrap ${
                     tx.type === "income" ? "text-emerald-600 dark:text-emerald-400" : "text-slate-900 dark:text-white"
                   }`}>
                     {tx.type === "income" ? "+" : "-"} {formatCurrency(tx.amount)}
                   </td>
                 </tr>
               ))}
+              {recentTransactions.length === 0 && (
+                <tr>
+                  <td colSpan="3" className="px-8 py-10 text-center text-slate-400 dark:text-white/20 text-sm italic">
+                    No transactions found. Click "+" in the navbar to start.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

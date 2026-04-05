@@ -13,7 +13,7 @@ import {
   Check,
 } from "lucide-react";
 import TransactionModal from "../components/ui/AddTransactionModal";
-import { useApp } from "../context/AppContext";
+import { useApp } from "../context/AppContext"; // Crucial import
 import { exportTransactions } from "../utils/exportUtils";
 
 const CATEGORIES = [
@@ -70,7 +70,7 @@ const CustomSelect = ({ options, value, onChange }) => {
       </button>
 
       {isOpen && (
-        <div className="absolute top-full mt-2 w-full bg-white dark:bg-[#0b1326] border border-slate-200 dark:border-white/10 rounded-2xl shadow-2xl z-[60] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <div className="absolute top-full mt-2 w-full bg-white dark:bg-[#161f33] border border-slate-200 dark:border-white/10 rounded-2xl shadow-2xl z-[60] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
           <div className="p-1.5">
             {options.map((opt) => (
               <button
@@ -100,14 +100,15 @@ export default function Transactions({
   externalModalOpen,
   setExternalModalOpen,
 }) {
-  const { role } = useApp();
+  const { 
+    transactions, 
+    addTransaction, 
+    deleteTransaction, 
+    updateTransaction, 
+    role 
+  } = useApp();
+  
   const isAdmin = role === "admin";
-
-  const [transactions, setTransactions] = useState(() => {
-    const saved = localStorage.getItem("zorvyn_transactions");
-    return saved ? JSON.parse(saved) : [];
-  });
-
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState(null);
   const [showExportOptions, setShowExportOptions] = useState(false);
@@ -117,10 +118,6 @@ export default function Transactions({
     type: "all",
     sortBy: "date",
   });
-
-  useEffect(() => {
-    localStorage.setItem("zorvyn_transactions", JSON.stringify(transactions));
-  }, [transactions]);
 
   useEffect(() => {
     if (externalModalOpen) {
@@ -137,10 +134,7 @@ export default function Transactions({
         const categoryMatch = t.category
           ?.toLowerCase()
           .includes(filters.search.toLowerCase());
-        const descriptionMatch = t.description
-          ?.toLowerCase()
-          .includes(filters.search.toLowerCase());
-        return categoryMatch || descriptionMatch;
+        return categoryMatch;
       })
       .sort((a, b) => {
         if (filters.sortBy === "amount") return b.amount - a.amount;
@@ -149,31 +143,18 @@ export default function Transactions({
   }, [transactions, filters]);
 
   const handleSave = (txData) => {
-    setTransactions((prev) => {
-      let updatedTransactions;
-      if (editingTransaction) {
-        updatedTransactions = prev.map((t) =>
-          t.id === txData.id ? txData : t,
-        );
-      } else {
-        const newEntry = { ...txData, id: Date.now() };
-        updatedTransactions = [newEntry, ...prev];
-      }
-
-      localStorage.setItem(
-        "zorvyn_transactions",
-        JSON.stringify(updatedTransactions),
-      );
-      return updatedTransactions;
-    });
-
+    if (editingTransaction) {
+      updateTransaction(txData.id, txData);
+    } else {
+      addTransaction(txData);
+    }
     setIsModalOpen(false);
     setEditingTransaction(null);
   };
 
   const handleDelete = (id) => {
     if (window.confirm("Permanently delete this record?")) {
-      setTransactions((prev) => prev.filter((t) => t.id !== id));
+      deleteTransaction(id);
       setOpenMenuId(null);
     }
   };
@@ -279,6 +260,7 @@ export default function Transactions({
           {filters.sortBy === "date" ? "Sort: Date" : "Sort: Amount"}
         </button>
       </div>
+
       <div className="grid gap-3">
         {filteredData.length === 0 ? (
           <div className="text-center py-24 bg-slate-50 dark:bg-white/5 rounded-3xl border border-dashed dark:border-white/10">

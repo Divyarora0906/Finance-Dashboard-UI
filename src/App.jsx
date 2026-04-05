@@ -34,7 +34,7 @@ function App() {
   };
 
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-[#050914] transition-colors duration-500 overflow-x-hidden">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#050914] transition-colors duration-500 overflow-x-hidden relative">
       <Navbar 
         onAction={() => setIsModalOpen(true)} 
         toggleSidebar={() => setIsSidebarOpen(true)} 
@@ -44,7 +44,7 @@ function App() {
         isOpen={isSidebarOpen} 
         onClose={() => setIsSidebarOpen(false)} 
       />
-      <main className="flex-1 lg:ml-64 pt-10 transition-all duration-300">
+      <main className="w-full lg:pl-60 pt-0 md:pt-5 transition-all duration-300">
         <div className="p-4 md:p-8 max-w-7xl mx-auto">
           <Routes>
             <Route 
@@ -72,7 +72,6 @@ function App() {
         categories={["Salary", "Food", "Rent", "Tech", "Transport", "Shopping", "Freelance"]}
       />
 
-      {/* Mobile Overlay */}
       {isSidebarOpen && (
         <div 
           className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[45] lg:hidden"

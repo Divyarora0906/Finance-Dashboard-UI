@@ -31,7 +31,7 @@ const Navbar = ({ onAction, toggleSidebar }) => {
         </button>
 
         <div className="flex flex-col">
-          <div className="flex items-center gap-2 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-[#4d8eff] dark:text-[#adc6ff] opacity-60">
+          <div className="flex items-center gap-2 text-[5px] md:text-[10px] font-black uppercase tracking-[0.2em] text-[#4d8eff] dark:text-[#adc6ff] opacity-60">
             <Zap size={10} fill="currentColor" className="hidden xs:block" />
             <span>Platform</span>
             <ChevronDown size={10} className="-rotate-90 opacity-40" />
@@ -61,13 +61,7 @@ const Navbar = ({ onAction, toggleSidebar }) => {
       {/* RIGHT: Action Buttons & Notifications */}
       <div className="flex items-center gap-2 md:gap-4">
         {role === 'admin' ? (
-          <button 
-            onClick={onAction} 
-            className="flex items-center gap-2 px-3 md:px-5 py-2.5 bg-[#4d8eff] dark:bg-[#adc6ff] text-white dark:text-[#002e6a] rounded-xl font-black text-[10px] uppercase transition-all shadow-[0_10px_20px_rgba(77,142,255,0.2)] active:scale-95 hover:opacity-90"
-          >
-            <Plus size={16} strokeWidth={3} />
-            <span className="hidden md:inline">New Entry</span>
-          </button>
+          <></>
         ) : (
           <div className="hidden xs:flex items-center gap-2 px-3 py-2 bg-slate-100 dark:bg-white/5 rounded-xl border border-slate-200 dark:border-white/5 text-[9px] font-black uppercase text-slate-400 dark:text-white/30 tracking-widest">
             <span className="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-white/20 animate-pulse" />

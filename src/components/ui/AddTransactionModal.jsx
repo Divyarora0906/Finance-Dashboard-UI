@@ -29,7 +29,7 @@ const CustomSelect = ({ options, value, onChange }) => {
       </button>
 
       {isOpen && (
-        <div className="absolute top-full mt-2 w-full bg-white dark:bg-[#161f33] border border-slate-200 dark:border-white/10 rounded-2xl shadow-2xl z-[110]  animate-in fade-in zoom-in-95 duration-200">
+        <div className="absolute top-full mt-2 w-full bg-white dark:bg-[#161f33] border border-slate-200 dark:border-white/10 rounded-2xl shadow-2xl z-[110] animate-in fade-in zoom-in-95 duration-200">
           <div className="p-1.5 max-h-48 overflow-y-auto custom-scrollbar">
             {options.map((opt) => (
               <button
@@ -83,16 +83,20 @@ export default function TransactionModal({ isOpen, onClose, onSave, categories, 
     e.preventDefault();
     if (!formData.amount || formData.amount <= 0) return;
     
-    onSave({
+    const payload = {
       ...formData,
-      id: editData ? editData.id : Date.now(),
       amount: parseFloat(formData.amount),
-    });
+      id: editData ? editData.id : Date.now(),
+    };
+
+    onSave(payload);
+    
+    onClose();
   };
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-in fade-in duration-300">
-      <div className="bg-white dark:bg-[#0b1326] border border-slate-200 dark:border-white/10 w-full max-w-md rounded-[2rem] shadow-2xl  relative transition-all">
+      <div className="bg-white dark:bg-[#0b1326] border border-slate-200 dark:border-white/10 w-full max-w-md rounded-[2rem] shadow-2xl relative transition-all">
         
         <button 
           onClick={onClose} 
@@ -106,13 +110,10 @@ export default function TransactionModal({ isOpen, onClose, onSave, categories, 
             <h3 className="text-slate-900 dark:text-white font-black text-2xl tracking-tighter">
               {editData ? "Update Record" : "New Transaction"}
             </h3>
-            <p className="text-slate-500 dark:text-white/30 text-xs font-bold uppercase tracking-widest mt-1">
-              {editData ? "Modify existing entry" : "Add to your ledger"}
-            </p>
           </header>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* TYPE TOGGLE */}
+            {/* Type Toggle */}
             <div className="space-y-3">
               <label className="block text-[10px] uppercase text-slate-400 dark:text-white/20 font-black tracking-[0.2em] ml-1">Flow Direction</label>
               <div className="flex gap-2 p-1.5 bg-slate-100 dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/5">
@@ -133,6 +134,7 @@ export default function TransactionModal({ isOpen, onClose, onSave, categories, 
               </div>
             </div>
 
+            {/* Amount and Date */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-3">
                 <label className="block text-[10px] uppercase text-slate-400 dark:text-white/20 font-black tracking-[0.2em] ml-1">Amount (₹)</label>
@@ -140,7 +142,7 @@ export default function TransactionModal({ isOpen, onClose, onSave, categories, 
                   required
                   type="number"
                   placeholder="0.00"
-                  className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm font-bold text-slate-900 dark:text-white focus:ring-4 focus:ring-[#4d8eff]/10 dark:focus:border-[#adc6ff] outline-none transition-all placeholder:opacity-20"
+                  className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm font-bold text-slate-900 dark:text-white outline-none transition-all"
                   value={formData.amount}
                   onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
                 />
@@ -150,13 +152,14 @@ export default function TransactionModal({ isOpen, onClose, onSave, categories, 
                 <label className="block text-[10px] uppercase text-slate-400 dark:text-white/20 font-black tracking-[0.2em] ml-1">Date</label>
                 <input
                   type="date"
-                  className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm font-bold text-slate-900 dark:text-white focus:ring-4 focus:ring-[#4d8eff]/10 dark:focus:border-[#adc6ff] outline-none transition-all dark:[color-scheme:dark]"
+                  className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm font-bold text-slate-900 dark:text-white outline-none transition-all dark:[color-scheme:dark]"
                   value={formData.date}
                   onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                 />
               </div>
             </div>
 
+            {/* Category */}
             <div className="space-y-3">
               <label className="block text-[10px] uppercase text-slate-400 dark:text-white/20 font-black tracking-[0.2em] ml-1">Category</label>
               <CustomSelect 
@@ -168,7 +171,7 @@ export default function TransactionModal({ isOpen, onClose, onSave, categories, 
 
             <button 
               type="submit" 
-              className="w-full bg-[#4d8eff] dark:bg-[#adc6ff] text-white dark:text-[#002e6a] font-black py-4 rounded-2xl mt-4 hover:brightness-110 hover:shadow-2xl hover:shadow-blue-500/20 transition-all active:scale-[0.98] uppercase text-[11px] tracking-[0.2em]"
+              className="w-full bg-[#4d8eff] dark:bg-[#adc6ff] text-white dark:text-[#002e6a] font-black py-4 rounded-2xl mt-4 hover:brightness-110 shadow-xl transition-all active:scale-[0.98] uppercase text-[11px] tracking-[0.2em]"
             >
               {editData ? "Update Entry" : "Confirm Transaction"}
             </button>
